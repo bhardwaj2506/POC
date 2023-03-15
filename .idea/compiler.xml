@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="employee-api-impl" target="1.8" />
+      <module name="employee-api-stream-impl" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="employee-api-impl" options="-g -encoding UTF-8 -parameters -Xlint:unchecked -Xlint:deprecation" />
+      <module name="employee-api-stream-impl" options="-g -encoding UTF-8 -parameters -Xlint:unchecked -Xlint:deprecation" />
+    </option>
+  </component>
+</project>
