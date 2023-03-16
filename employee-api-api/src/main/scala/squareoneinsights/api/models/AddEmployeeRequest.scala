@@ -2,7 +2,7 @@ package squareoneinsights.api.models
 
 import play.api.libs.json.{Format, Json}
 
-case class AddEmployeeRequest(dbType: String, content: String)
+case class AddEmployeeRequest(dbType: String, employeeName: String)
 
 object AddEmployeeRequest {
 

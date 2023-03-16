@@ -5,8 +5,10 @@ import akka.actor.ActorSystem
 import akka.kafka.scaladsl.Consumer
 import akka.kafka.{ConsumerSettings, Subscriptions}
 import akka.stream.scaladsl.{Keep, RunnableGraph, Sink}
+import akka.stream.{ActorAttributes, Supervision}
 import com.datastax.oss.driver.api.core.CqlSession
 import com.lightbend.lagom.internal.broker.kafka.ConsumerConfig
+import com.lightbend.lagom.scaladsl.api.transport.BadRequest
 import com.typesafe.config.ConfigFactory
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.{Logger, LoggerFactory}
@@ -17,12 +19,12 @@ import squareoneinsights.api.models.AddEmployeeRequest
 import squareoneinsights.impl.db.{CassandraEmployeeRepository, EmployeeRepository, PostgresEmployeeRepository}
 
 import java.net.InetSocketAddress
-import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
+import scala.concurrent.{ExecutionContext, Future}
 
 
-class kafkaConsumerPipeline(implicit system: ActorSystem) {
-  val log: Logger = LoggerFactory.getLogger("kafkaConsumerPipeline")
+class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContext) {
+  val log: Logger = LoggerFactory.getLogger(classOf[kafkaConsumerPipeline])
 
   private val config = ConfigFactory.load()
   val dbProfile = config.getString("ifrm.db.profile")
@@ -50,18 +52,35 @@ class kafkaConsumerPipeline(implicit system: ActorSystem) {
     .withProperty(ConsumerConfig.configPath, "earliest")
     .withStopTimeout(0.seconds)
 
+  val decider: Supervision.Decider = {
+    case ex: Exception =>
+      log.error(ex.getMessage)
+      Supervision.Resume
+
+    case fatal =>
+      log.error(fatal.getMessage)
+      Supervision.Stop
+  }
 
   def employeeConsumerPipeline: RunnableGraph[Future[Done]] = Consumer
-    .atMostOnceSource(employeeConsumerSettings, Subscriptions.topics(topic))
+    .atMostOnceSource(employeeConsumerSettings, Subscriptions.topics(topic)).withAttributes(ActorAttributes.supervisionStrategy(decider))
     .mapAsync(1) { record =>
       val request = Json.parse(record.value()).as[AddEmployeeRequest]
       val repository = request.dbType match {
         case "C" => cassandraRepository
         case "P" => postgresRepository
-        case _ => throw new Exception("Invalid Database Type Request")
+        case _ =>
+          log.error("Invalid Database Type Request")
+          throw BadRequest("Invalid Database Type Request")
       }
-      log.info(s"Adding employee data ${request.content} to ${repository.getClass.getName} database")
-      repository.addEmployee(request.content)
+      log.info(s"Adding employee data ${request.employeeName} to database")
+      repository.addEmployee(request.employeeName)
+    }
+    .recover {
+      case _: Exception =>
+        log.error("Exception occurred while consuming data")
+        throw new Exception("Invalid Database Type Request")
     }
     .toMat(Sink.ignore)(Keep.right)
+
 }

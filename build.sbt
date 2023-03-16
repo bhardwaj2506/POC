@@ -15,6 +15,7 @@ val slickHikaricp = "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3"
 val slickpg = "com.github.tminglei" %% "slick-pg" % "0.20.3"
 val playJson = "com.github.tminglei" %% "slick-pg_play-json" % "0.20.3"
 val metricsCore = "com.codahale.metrics" % "metrics-core" % "3.0.2"
+val catsEffect = "org.typelevel" %% "cats-core" % "2.7.0"
 
 lazy val `employee-api` = (project in file("."))
   .aggregate(`employee-api-api`, `employee-api-impl`)
@@ -22,7 +23,9 @@ lazy val `employee-api` = (project in file("."))
 lazy val `employee-api-api` = (project in file("employee-api-api"))
   .settings(
     libraryDependencies ++= Seq(
-      lagomScaladslApi
+      lagomScaladslApi,
+      lagomScaladslPersistenceCassandra,
+      alpakkaCassandra
     )
   )
 
@@ -35,12 +38,14 @@ lazy val `employee-api-impl` = (project in file("employee-api-impl"))
       lagomScaladslTestKit,
       macwire,
       scalaTest,
-      slick,      postgresql,
+      slick,
+      postgresql,
       slickHikaricp,
       slickpg,
       playJson,
       metricsCore,
-      alpakkaCassandra
+      alpakkaCassandra,
+      catsEffect
     )
   )
   .settings(lagomForkedTestSettings)
