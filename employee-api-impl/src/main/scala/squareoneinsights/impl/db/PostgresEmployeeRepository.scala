@@ -1,8 +1,8 @@
-package squareoneinsights.impl.employee
+package squareoneinsights.impl.db
 
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
-import squareoneinsights.api.Employee
+import squareoneinsights.api.models.Employee
 
 import scala.concurrent.Future
 
@@ -10,7 +10,6 @@ import scala.concurrent.Future
 class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile]) extends EmployeeRepository with Db with EmployeeTrait {
 
   import config.profile.api._
-
 
   val employeeTable = TableQuery[EmployeeTable]
 

@@ -1,4 +1,4 @@
-package squareoneinsights.impl.employee
+package squareoneinsights.impl.db
 
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile

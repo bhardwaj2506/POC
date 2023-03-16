@@ -1,19 +1,23 @@
 ThisBuild / organization := "squareoneinsights"
 ThisBuild / version := "1.0"
 
-// the Scala version that will be used for cross-compiled libraries
 ThisBuild / scalaVersion := "2.13.8"
 
-// Workaround for scala-java8-compat issue affecting Lagom dev-mode
-// https://github.com/lagom/lagom/issues/3344
 ThisBuild / libraryDependencySchemes +=
   "org.scala-lang.modules" %% "scala-java8-compat" % VersionScheme.Always
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.3" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
+val alpakkaCassandra = "com.lightbend.akka"   %% "akka-stream-alpakka-cassandra" % "2.0.2"
+val slick = "com.typesafe.slick" %% "slick" % "3.3.3"
+val postgresql = "org.postgresql" % "postgresql" % "42.3.4"
+val slickHikaricp = "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3"
+val slickpg = "com.github.tminglei" %% "slick-pg" % "0.20.3"
+val playJson = "com.github.tminglei" %% "slick-pg_play-json" % "0.20.3"
+val metricsCore = "com.codahale.metrics" % "metrics-core" % "3.0.2"
 
 lazy val `employee-api` = (project in file("."))
-  .aggregate(`employee-api-api`, `employee-api-impl`, `employee-api-stream-api`, `employee-api-stream-impl`)
+  .aggregate(`employee-api-api`, `employee-api-impl`)
 
 lazy val `employee-api-api` = (project in file("employee-api-api"))
   .settings(
@@ -31,30 +35,13 @@ lazy val `employee-api-impl` = (project in file("employee-api-impl"))
       lagomScaladslTestKit,
       macwire,
       scalaTest,
-      "com.typesafe.slick" %% "slick" % "3.3.3",
-      "org.postgresql" % "postgresql" % "42.3.4",
-      "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
-      "com.github.tminglei" %% "slick-pg" % "0.20.3",
-      "com.github.tminglei" %% "slick-pg_play-json" % "0.20.3"
+      slick,      postgresql,
+      slickHikaricp,
+      slickpg,
+      playJson,
+      metricsCore,
+      alpakkaCassandra
     )
   )
   .settings(lagomForkedTestSettings)
   .dependsOn(`employee-api-api`)
-
-lazy val `employee-api-stream-api` = (project in file("employee-api-stream-api"))
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslApi
-    )
-  )
-
-lazy val `employee-api-stream-impl` = (project in file("employee-api-stream-impl"))
-  .enablePlugins(LagomScala)
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslTestKit,
-      macwire,
-      scalaTest
-    )
-  )
-  .dependsOn(`employee-api-stream-api`, `employee-api-api`)

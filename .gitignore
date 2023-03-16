@@ -11,3 +11,7 @@ bin
 .factorypath
 .settings
 logs
+.idea/
+cassandra_data/
+.bsp/
+db/

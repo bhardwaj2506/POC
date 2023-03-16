@@ -1,6 +1,6 @@
-package squareoneinsights.impl.employee
+package squareoneinsights.impl.db
 
-import squareoneinsights.api.Employee
+import squareoneinsights.api.models.Employee
 
 
 trait EmployeeTrait{

@@ -11,6 +11,16 @@ services:
     volumes:
       - db:/var/lib/postgresql11/data
       - ./db/init-scripts.sql:/docker-entrypoint-initdb.d/scripts.sql
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    volumes:
+      - ./cassandra_data:/var/lib/cassandra
+    environment:
+      - "MAX_HEAP_SIZE=1G"
+      - "HEAP_NEWSIZE=256M"
 
 volumes:
   db:

@@ -1,4 +1,4 @@
-package squareoneinsights.api
+package squareoneinsights.api.models
 
 import play.api.libs.json.{Format, Json}
 

@@ -12,7 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="employee-api-api" exported="" />
-    <orderEntry type="module" module-name="employee-api-stream-api" exported="" />
     <orderEntry type="library" name="sbt: ch.qos.logback:logback-classic:1.2.3:jar" level="project" />
     <orderEntry type="library" name="sbt: ch.qos.logback:logback-core:1.2.3:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="sbt: com.datastax.cassandra:cassandra-driver-core:3.7.2:jar" level="project" />
