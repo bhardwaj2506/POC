@@ -6,7 +6,6 @@ import squareoneinsights.api.models.Employee
 trait EmployeeTrait{
   this:Db =>
   import config.profile.api._
-
   class EmployeeTable(tag: Tag) extends Table[Employee](tag, "employee") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 

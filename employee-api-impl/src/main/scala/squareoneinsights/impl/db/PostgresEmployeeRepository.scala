@@ -4,6 +4,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 import squareoneinsights.api.models.Employee
+import squareoneinsights.impl.utils.Constants
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -23,7 +24,7 @@ class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implic
     database.run(action).recover {
       case ex: Exception =>
         log.error(s"Error while inserting data into postgres database : ${ex.getMessage}")
-        throw new RuntimeException(s"Error while inserting data into postgres database : ${ex.getMessage}")
+        throw new RuntimeException(Constants.INSERTION_FAILURE)
     }
   }
 
@@ -31,7 +32,7 @@ class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implic
     database.run(employeeTable.filter(_.id === id).result.headOption).recover {
       case ex: Exception =>
         log.error(s"Error while getting data from postgres database : ${ex.getMessage}")
-        throw new RuntimeException(s"Error while getting data from postgres database : ${ex.getMessage}")
+        throw new RuntimeException(Constants.GETTING_FAILURE)
     }
   }
 
@@ -39,7 +40,7 @@ class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implic
     database.run(employeeTable.filter(_.id === employee.id).update(employee)).recover {
       case ex: Exception =>
         log.error(s"Error while updating data into postgres database : ${ex.getMessage}")
-        throw new RuntimeException(s"Error while updating data into postgres database : ${ex.getMessage}")
+        throw new RuntimeException(Constants.UPDATE_FAILURE)
     }
   }
 
@@ -47,7 +48,7 @@ class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implic
     database.run(employeeTable.filter(_.id === id).delete).recover {
       case ex: Exception =>
         log.error(s"Error while deleting data from postgres database : ${ex.getMessage}")
-        throw new RuntimeException(s"Error while deleting data from postgres database : ${ex.getMessage}")
+        throw new RuntimeException(Constants.DELETION_FAILURE)
     }
   }
 
@@ -55,7 +56,7 @@ class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implic
     database.run(employeeTable.result).recover {
       case ex: Exception =>
         log.error(s"Error while fetching all the employee data from postgres database : ${ex.getMessage}")
-        throw new RuntimeException(s"Error while fetching all the employee data from postgres database : ${ex.getMessage}")
+        throw new RuntimeException(Constants.FETCHING_ALL_FAILURE)
     }
   }
 }
