@@ -27,7 +27,7 @@ class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContextEx
   val log: Logger = LoggerFactory.getLogger(classOf[kafkaConsumerPipeline])
 
   private val config = ConfigFactory.load()
-  val dbProfile = config.getString("ifrm.db.profile")
+  val dbProfile = config.getString("employee.db.profile")
   val hostName = config.getString("hostname")
   val portName = config.getInt("portname")
   val dataCenter = config.getString("datacenter")
