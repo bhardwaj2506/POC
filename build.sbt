@@ -16,6 +16,9 @@ val slickpg = "com.github.tminglei" %% "slick-pg" % "0.20.3"
 val playJson = "com.github.tminglei" %% "slick-pg_play-json" % "0.20.3"
 val metricsCore = "com.codahale.metrics" % "metrics-core" % "3.0.2"
 val catsEffect = "org.typelevel" %% "cats-core" % "2.7.0"
+val mockito =  "org.mockito" % "mockito-all" % "1.10.19" % Test
+val mockiteCore = "org.mockito" % "mockito-core" % "5.1.1" % Test
+val mockitoScala = "org.mockito" % "mockito-scala_2.13" % "1.17.5"
 
 lazy val `employee-api` = (project in file("."))
   .aggregate(`employee-api-api`, `employee-api-impl`)
@@ -45,7 +48,10 @@ lazy val `employee-api-impl` = (project in file("employee-api-impl"))
       playJson,
       metricsCore,
       alpakkaCassandra,
-      catsEffect
+      catsEffect,
+      mockito,
+      mockiteCore,
+      mockitoScala
     )
   )
   .settings(lagomForkedTestSettings)

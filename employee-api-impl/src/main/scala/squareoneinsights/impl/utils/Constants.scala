@@ -26,10 +26,4 @@ object Constants {
   final val EMPLOYEE_UPDATED_SUCCESS = "Employee updated Successfully"
 
 
-
-
-
-
-
-
 }
