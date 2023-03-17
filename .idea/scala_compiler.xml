@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="employee-api,employee-api-api,employee-api-impl,employee-api-stream-api,employee-api-stream-impl,employee-api_5672,lagom-internal-meta-project-cassandra,lagom-internal-meta-project-kafka,lagom-internal-meta-project-service-locator" />
-  </component>
-</project>
