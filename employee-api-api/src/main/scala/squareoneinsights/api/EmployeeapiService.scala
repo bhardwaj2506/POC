@@ -8,7 +8,7 @@ import squareoneinsights.api.models.{AddEmployeeRequest, AddEmployeeResponse, Em
 
 trait EmployeeapiService extends Service {
 
-  def addEmployee: ServiceCall[AddEmployeeRequest, AddEmployeeResponse]
+  def addEmployee(): ServiceCall[AddEmployeeRequest, AddEmployeeResponse]
 
   def getEmployee(id: Long): ServiceCall[NotUsed, EmployeeResponse]
 

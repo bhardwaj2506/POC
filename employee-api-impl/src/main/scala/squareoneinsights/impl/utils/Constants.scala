@@ -15,7 +15,7 @@ object Constants {
   final val CONSUMING_FAILURE = "Error while consuming employees records from kafka consumer :"
   final val SEND_MESSAGE_FAILURE = "Error occurred while sending message to kafka consumer"
 
-  final val MESSAGE_SENT_SUCCSSFULLY = "Message send successfully"
+  final val MESSAGE_SENT_SUCCESSFULLY = "Message send successfully"
 
   final val INVALID_EMPLOYEE = "Employee Name cannot be empty"
   final val INVALID_DBTYPE = "DbType only have P for Postgres or C for Cassandra"

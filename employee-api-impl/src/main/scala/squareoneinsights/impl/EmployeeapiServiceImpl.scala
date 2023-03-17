@@ -1,6 +1,6 @@
 package squareoneinsights.impl
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.stream.ActorMaterializer
 import akka.{Done, NotUsed}
 import cats.data.Validated.{Invalid, Valid}
@@ -31,14 +31,14 @@ class EmployeeapiServiceImpl(postgresEmployeeRepository: PostgresEmployeeReposit
   private val config = ConfigFactory.load()
   val topic: String = config.getString(Constants.TOPIC)
 
-  val kafkaProducerActor = system.actorOf(Props(new KafkaProducerActor))
+  private val kafkaProducerActor: ActorRef = system.actorOf(Props(new KafkaProducerActor))
 
   override def addEmployee: ServiceCall[AddEmployeeRequest, AddEmployeeResponse] = { request =>
-    validaRequest(request) match {
+    validRequest(request) match {
       case Valid(_) =>
         log.info(s"Making request for Adding employee name ${request.employeeName} into ${if (request.dbType.equals("P")) "Postgres" else "Cassandra "} database")
         kafkaProducerActor ! Send(topic, Json.toJson(request).toString())
-        Future(AddEmployeeResponse(Constants.MESSAGE_SENT_SUCCSSFULLY))
+        Future(AddEmployeeResponse(Constants.MESSAGE_SENT_SUCCESSFULLY))
 
       case Invalid(e) =>
         log.info(s"Error while sending employee records to producer: ${e.head}")
@@ -64,7 +64,7 @@ class EmployeeapiServiceImpl(postgresEmployeeRepository: PostgresEmployeeReposit
     Future.successful(Done)
   }
 
-  def validaRequest(request: AddEmployeeRequest): ValidatedNel[String, AddEmployeeRequest] = {
+  def validRequest(request: AddEmployeeRequest): ValidatedNel[String, AddEmployeeRequest] = {
     val validName = validateName(request.employeeName)
     val validDbType = validateDbType(request.dbType)
     (validName, validDbType).mapN((_, _) => request)

@@ -35,7 +35,7 @@ abstract class EmployeeapiApplication(context: LagomApplicationContext)
     with AhcWSComponents {
 
   val dbProfile = ConfigFactory.load().getString("ifrm.db.profile")
-  val postgreDatabaseConfig = DatabaseConfig.forConfig[JdbcProfile](dbProfile)
+  val postgresDatabaseConfig = DatabaseConfig.forConfig[JdbcProfile](dbProfile)
   lazy val postgresEmployeeRepository: PostgresEmployeeRepository = wire[PostgresEmployeeRepository]
   override lazy val lagomServer: LagomServer = serverFor[EmployeeapiService](wire[EmployeeapiServiceImpl])
 
