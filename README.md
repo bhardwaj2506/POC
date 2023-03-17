@@ -47,9 +47,6 @@ The application should now be accessible at http://localhost:9000
 
 ## Endpoints
 
-### `GET http://localhost:9000/api/employees/add`
-
-Returns a list of all employees in the database.
 
 ### `GET http://localhost:9000/api/employee/get/{id}`
 
