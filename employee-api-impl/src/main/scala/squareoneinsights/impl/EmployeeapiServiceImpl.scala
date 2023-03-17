@@ -2,6 +2,7 @@ package squareoneinsights.impl
 
 import akka.actor.{ActorSystem, Props}
 import akka.stream.ActorMaterializer
+import akka.{Done, NotUsed}
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
 import cats.implicits._
@@ -11,22 +12,26 @@ import com.typesafe.config.ConfigFactory
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.libs.json.Json
 import squareoneinsights.api.EmployeeapiService
-import squareoneinsights.api.models.{AddEmployeeRequest, AddEmployeeResponse, Send}
+import squareoneinsights.api.models._
+import squareoneinsights.impl.db.PostgresEmployeeRepository
 import squareoneinsights.impl.producer.KafkaProducerActor
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContextExecutor, Future}
 
 
-class EmployeeapiServiceImpl(implicit ec: ExecutionContext) extends EmployeeapiService {
+class EmployeeapiServiceImpl(postgresEmployeeRepository: PostgresEmployeeRepository) extends EmployeeapiService {
   private final val log: Logger =
     LoggerFactory.getLogger(classOf[EmployeeapiServiceImpl])
 
   implicit val system: ActorSystem = ActorSystem("employee-api")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val executionContextExecutor: ExecutionContextExecutor = system.dispatcher
+
   private val config = ConfigFactory.load()
   val topic = config.getString("topic")
 
   val kafkaProducerActor = system.actorOf(Props(new KafkaProducerActor))
+
   override def addEmployee(): ServiceCall[AddEmployeeRequest, AddEmployeeResponse] = { request =>
     validaRequest(request) match {
       case Valid(_) =>
@@ -51,4 +56,22 @@ class EmployeeapiServiceImpl(implicit ec: ExecutionContext) extends EmployeeapiS
 
   private def validateDbType(dbType: String): ValidatedNel[String, String] =
     if (dbType.contains("P") || dbType.contains("C")) dbType.validNel else "DbType only have P for Postgres or C for Cassandra".invalidNel
+
+  override def getEmployee(id: Long): ServiceCall[NotUsed, EmployeeResponse] = ServiceCall { _ =>
+    postgresEmployeeRepository.get(id).flatMap {
+      case Some(value) => Future(EmployeeResponse("Employee found ", value.name, value.id))
+      case None => Future.failed(new Exception("Couldn't find employee"))
+    }
+  }
+
+  override def updateEmployee(id: Long): ServiceCall[UpdateEmployeeRequest, EmployeeResponse] = ServiceCall { request =>
+    val updateEmployee = Employee(request.name, request.id)
+    postgresEmployeeRepository.update(updateEmployee)
+    Future(EmployeeResponse("Employee updated Successfully", updateEmployee.name, updateEmployee.id))
+  }
+
+  override def deleteEmployee(id: Long): ServiceCall[NotUsed, Done] = ServiceCall { _ =>
+    postgresEmployeeRepository.delete(id)
+    Future.successful(Done)
+  }
 }

@@ -20,10 +20,10 @@ import squareoneinsights.impl.db.{CassandraEmployeeRepository, EmployeeRepositor
 
 import java.net.InetSocketAddress
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContextExecutor, Future}
 
 
-class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContext) {
+class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContextExecutor) {
   val log: Logger = LoggerFactory.getLogger(classOf[kafkaConsumerPipeline])
 
   private val config = ConfigFactory.load()
@@ -74,7 +74,7 @@ class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContext) 
           throw BadRequest("Invalid Database Type Request")
       }
       log.info(s"Adding employee data ${request.employeeName} to database")
-      repository.addEmployee(request.employeeName)
+      repository.add(request.employeeName)
     }
     .recover {
       case _: Exception =>

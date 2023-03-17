@@ -14,11 +14,11 @@ import play.api.Logging
 import squareoneinsights.api.models.Send
 import squareoneinsights.impl.consumer.kafkaConsumerPipeline
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContextExecutor, Future}
 
 
 class KafkaProducerActor(implicit system: ActorSystem,
-                         executionContext: ExecutionContext,
+                         executionContext: ExecutionContextExecutor,
                          materializer: Materializer) extends Actor with Logging {
 
   val log: Logger = LoggerFactory.getLogger(classOf[KafkaProducerActor])

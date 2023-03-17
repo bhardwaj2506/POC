@@ -8,8 +8,12 @@ import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraPersistenceCo
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
 import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
+import com.typesafe.config.ConfigFactory
 import play.api.libs.ws.ahc.AhcWSComponents
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
 import squareoneinsights.api.EmployeeapiService
+import squareoneinsights.impl.db.PostgresEmployeeRepository
 
 class EmployeeapiLoader extends LagomApplicationLoader {
 
@@ -30,7 +34,9 @@ abstract class EmployeeapiApplication(context: LagomApplicationContext)
     with LagomKafkaComponents
     with AhcWSComponents {
 
-
+  val dbProfile = ConfigFactory.load().getString("ifrm.db.profile")
+  val postgreDatabaseConfig = DatabaseConfig.forConfig[JdbcProfile](dbProfile)
+  lazy val postgresEmployeeRepository: PostgresEmployeeRepository = wire[PostgresEmployeeRepository]
   override lazy val lagomServer: LagomServer = serverFor[EmployeeapiService](wire[EmployeeapiServiceImpl])
 
   override lazy val jsonSerializerRegistry: JsonSerializerRegistry = EmployeeapiSerializerRegistry

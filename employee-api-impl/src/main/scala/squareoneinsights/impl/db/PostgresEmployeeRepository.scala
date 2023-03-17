@@ -8,7 +8,7 @@ import squareoneinsights.api.models.Employee
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implicit val ec : ExecutionContext) extends EmployeeRepository with Db with EmployeeTrait {
+class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implicit val ec: ExecutionContext) extends EmployeeRepository with Db with EmployeeTrait {
   private final val log: Logger =
     LoggerFactory.getLogger(classOf[PostgresEmployeeRepository])
 
@@ -16,7 +16,7 @@ class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implic
 
   val employeeTable = TableQuery[EmployeeTable]
 
-  override def addEmployee(name: String): Future[Employee] = {
+  override def add(name: String): Future[Employee] = {
     val employee = Employee(name)
     val action = (employeeTable returning employeeTable.map(_.id) into ((emp, id) => emp.copy(id = Some(id)))) += employee
     log.info(s"Inserting employee details $employee into postgres database")
@@ -24,6 +24,38 @@ class PostgresEmployeeRepository(val config: DatabaseConfig[JdbcProfile])(implic
       case ex: Exception =>
         log.error(s"Error while inserting data into postgres database : ${ex.getMessage}")
         throw new RuntimeException(s"Error while inserting data into postgres database : ${ex.getMessage}")
+    }
+  }
+
+  override def get(id: Long): Future[Option[Employee]] = {
+    database.run(employeeTable.filter(_.id === id).result.headOption).recover {
+      case ex: Exception =>
+        log.error(s"Error while getting data from postgres database : ${ex.getMessage}")
+        throw new RuntimeException(s"Error while getting data from postgres database : ${ex.getMessage}")
+    }
+  }
+
+  override def update(employee: Employee): Future[Int] = {
+    database.run(employeeTable.filter(_.id === employee.id).update(employee)).recover {
+      case ex: Exception =>
+        log.error(s"Error while updating data into postgres database : ${ex.getMessage}")
+        throw new RuntimeException(s"Error while updating data into postgres database : ${ex.getMessage}")
+    }
+  }
+
+  override def delete(id: Long): Future[Int] = {
+    database.run(employeeTable.filter(_.id === id).delete).recover {
+      case ex: Exception =>
+        log.error(s"Error while deleting data from postgres database : ${ex.getMessage}")
+        throw new RuntimeException(s"Error while deleting data from postgres database : ${ex.getMessage}")
+    }
+  }
+
+  override def listAll(): Future[Seq[Employee]] = {
+    database.run(employeeTable.result).recover {
+      case ex: Exception =>
+        log.error(s"Error while fetching all the employee data from postgres database : ${ex.getMessage}")
+        throw new RuntimeException(s"Error while fetching all the employee data from postgres database : ${ex.getMessage}")
     }
   }
 }
