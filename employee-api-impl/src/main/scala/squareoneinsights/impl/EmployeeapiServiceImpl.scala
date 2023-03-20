@@ -38,7 +38,7 @@ class EmployeeapiServiceImpl(postgresEmployeeRepository: PostgresEmployeeReposit
       case Valid(_) =>
         log.info(s"Making request for Adding employee name ${request.employeeName} into ${if (request.dbType.equals("P")) "Postgres" else "Cassandra "} database")
         kafkaProducerActor ! Send(topic, Json.toJson(request).toString())
-        Future(AddEmployeeResponse(Constants.MESSAGE_SENT_SUCCESSFULLY))
+        Future(AddEmployeeResponse(s"${request.employeeName} ${Constants.MESSAGE_SENT_SUCCESSFULLY} to ${if (request.dbType.equals("P")) "Postgres" else "Cassandra"} database"))
 
       case Invalid(e) =>
         log.info(s"Error while sending employee records to producer: ${e.head}")

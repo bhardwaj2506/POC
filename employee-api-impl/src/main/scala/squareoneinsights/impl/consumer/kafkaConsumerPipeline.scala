@@ -27,16 +27,16 @@ class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContextEx
   val log: Logger = LoggerFactory.getLogger(classOf[kafkaConsumerPipeline])
 
   private val config = ConfigFactory.load()
-  val dbProfile = config.getString("employee.db.profile")
-  val hostName = config.getString("hostname")
-  val portName = config.getInt("portname")
-  val dataCenter = config.getString("datacenter")
-  val groupId = config.getString("groupId")
-  val topic = config.getString("topic")
+  val dbProfile: String = config.getString("employee.db.profile")
+  val hostName: String = config.getString("hostname")
+  val portName: Int = config.getInt("portname")
+  val dataCenter: String = config.getString("datacenter")
+  val groupId: String = config.getString("groupId")
+  val topic: String = config.getString("topic")
 
   val databaseConfig = DatabaseConfig.forConfig[JdbcProfile](dbProfile)
 
-  val sessionCql = CqlSession.builder()
+  val sessionCql: CqlSession = CqlSession.builder()
     .addContactPoint(new InetSocketAddress(hostName, portName))
     .withLocalDatacenter(dataCenter)
     .build()
@@ -52,7 +52,7 @@ class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContextEx
     .withProperty(ConsumerConfig.configPath, "earliest")
     .withStopTimeout(0.seconds)
 
-  val decider: Supervision.Decider = {
+  private val decider: Supervision.Decider = {
     case ex: Exception =>
       log.error(ex.getMessage)
       Supervision.Resume
@@ -78,8 +78,8 @@ class kafkaConsumerPipeline(implicit system: ActorSystem, ec: ExecutionContextEx
     }
     .recover {
       case _: Exception =>
-        log.error("Exception occurred while consuming data")
-        throw new Exception("Invalid Database Type Request")
+        log.error("Exception occurred while consuming data from kafka server")
+        throw new Exception("Exception occurred while consuming data from kafka server")
     }
     .toMat(Sink.ignore)(Keep.right)
 

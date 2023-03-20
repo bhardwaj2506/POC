@@ -1,7 +1,7 @@
 package squareoneinsights.api
 
 import akka.{Done, NotUsed}
-import com.lightbend.lagom.scaladsl.api.transport.Method.{DELETE, GET, PUT}
+import com.lightbend.lagom.scaladsl.api.transport.Method.{DELETE, GET, POST, PUT}
 import com.lightbend.lagom.scaladsl.api.{Descriptor, Service, ServiceCall}
 import squareoneinsights.api.models.{AddEmployeeRequest, AddEmployeeResponse, EmployeeResponse, UpdateEmployeeRequest}
 
@@ -21,7 +21,7 @@ trait EmployeeapiService extends Service {
 
     named("employee-api")
       .withCalls(
-        pathCall("/api/employees/add", addEmployee _),
+        restCall(POST,"/api/employee/add", addEmployee _),
         restCall(GET,"/api/employee/get/:id", getEmployee _),
         restCall(PUT,"/api/employee/update/:id", updateEmployee _),
         restCall(DELETE,"/api/employee/delete/:id", deleteEmployee _)

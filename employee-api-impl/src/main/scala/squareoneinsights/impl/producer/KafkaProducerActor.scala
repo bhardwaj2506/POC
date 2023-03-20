@@ -46,7 +46,7 @@ class KafkaProducerActor(implicit system: ActorSystem,
     kafkaConsumerPipeline.employeeConsumerPipeline.run()
       .recover {
         case ex: Exception =>
-          log.error(s"Error while consuming employees records from kafka consumer : ${ex.getMessage}")
+          log.error(s"Error while consuming employees records : ${ex.getMessage}")
           throw new RuntimeException(Constants.CONSUMING_FAILURE)
       }
   }
